@@ -1,0 +1,23 @@
+<workflow-app xmlns="uri:oozie:workflow:0.4" name="hive-action-wf">
+  <start to="hive-action"/>
+  <action name="hive-action" retry-max="1" retry-interval="1">
+	<hive xmlns="uri:oozie:hive-action:0.4" >
+            <job-tracker>${jobTracker}</job-tracker>
+                  <name-node>${nameNode}</name-node>
+                        <prepare>
+                                <delete path="${workflowRoot}/output"/>
+                                <mkdir path="${workflowRoot}/output"/>
+                        </prepare>
+                        <!--  -->
+                        <script>hive-script.hql</script>
+                        <param>YEAR=${YEAR}</param>
+                        </hive>
+        <ok to="end"/>
+        <error to="fail"/>
+  </action>
+  <kill name="fail">
+  	<message>Hive failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+  </kill>
+  <end name="end"/>
+</workflow-app>
+
